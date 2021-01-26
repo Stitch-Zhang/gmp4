@@ -9,15 +9,16 @@ import (
 	"time"
 )
 
-
-type remoteVideo struct {
-	url    *url.URL
+//RemoteVideo define a web video
+type RemoteVideo struct {
+	url     *url.URL
 	timeout time.Duration
-	header http.Header
+	header  http.Header
 	mvhdBox
 }
-// NewRemote return a remoteVideo object
-func NewRemote(rawurl string) (*remoteVideo, error) {
+
+// NewRemote return a RemoteVideo object
+func NewRemote(rawurl string) (*RemoteVideo, error) {
 	if !strings.Contains(rawurl, "mp4") {
 		return nil, fmt.Errorf("%s is invalid\n make sure the type of url resource is mp4 ", rawurl)
 	}
@@ -25,22 +26,24 @@ func NewRemote(rawurl string) (*remoteVideo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &remoteVideo{url: u}, nil
+	return &RemoteVideo{url: u}, nil
 }
+
 // SetHeader can manually set webClient cookie UA etc
-func (r *remoteVideo) SetHeader(h http.Header) {
-	r.header = h
-}
-// SetTimeout can manually set webClient timeout
-func (r *remoteVideo) SetTimeout(h http.Header) {
+func (r *RemoteVideo) SetHeader(h http.Header) {
 	r.header = h
 }
 
-func (r *remoteVideo)getMvhdBox()mvhdBox{
+// SetTimeout can manually set webClient timeout
+func (r *RemoteVideo) SetTimeout(time time.Duration) {
+	r.timeout = time
+}
+
+func (r *RemoteVideo) getMvhdBox() mvhdBox {
 	return r.mvhdBox
 }
 
-func (r *remoteVideo) collectData() {
+func (r *RemoteVideo) collectData() {
 	client := &http.Client{Timeout: r.timeout}
 	req, err := http.NewRequest("GET", r.url.String(), nil)
 	if err != nil {
@@ -58,9 +61,8 @@ func (r *remoteVideo) collectData() {
 		req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", (i-1)*128+skip, i*128+skip))
 		resp, err := client.Do(req)
 		//Handle resource is not mp4
-		if resp.Header.Get("Content-Type") !="video/mp4"{
-			panic(r.url.String()+"%s is invalid resource")
-			return
+		if resp.Header.Get("Content-Type") != "video/mp4" {
+			panic(r.url.String() + "%s is invalid resource")
 		}
 		if err != nil {
 			fmt.Println("remoteFile.go:send request failed!", err)

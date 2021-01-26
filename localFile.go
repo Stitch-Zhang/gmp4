@@ -4,17 +4,21 @@ import (
 	"os"
 )
 
-type localVideo struct {
+//LocalVideo define a local video
+type LocalVideo struct {
 	file *os.File
 	mvhdBox
 }
-// NewLocal return a localVideo
-func NewLocal(fileName string) (*localVideo, error) {
+
+// NewLocal return a LocalVideo
+func NewLocal(fileName string) (*LocalVideo, error) {
 	f, err := os.Open(fileName)
-	return &localVideo{file: f}, err
+	return &LocalVideo{file: f}, err
 }
+
 // By reading a part of file,Find & parse mvhd box to get time
-func (l *localVideo) collectData() {
+func (l *LocalVideo) collectData() {
+	defer l.file.Close()
 	// Read file apart
 	buf := make([]byte, 128)
 	i := 0
@@ -34,8 +38,7 @@ func (l *localVideo) collectData() {
 			i += 128
 		}
 	}
-	defer l.file.Close()
 }
-func (l *localVideo)getMvhdBox()mvhdBox{
+func (l *LocalVideo) getMvhdBox() mvhdBox {
 	return l.mvhdBox
 }

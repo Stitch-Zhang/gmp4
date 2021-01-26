@@ -1,4 +1,4 @@
-// This package written base on ISO/IEC 14496
+// This package was written based on ISO/IEC 14496
 // Gain video time,only supported mp4 now
 package gmp4
 
@@ -17,7 +17,7 @@ type mvhdBox struct {
 
 type video interface {
 	collectData()
-	getMvhdBox()mvhdBox
+	getMvhdBox() mvhdBox
 }
 
 // Translate byte to int
@@ -34,6 +34,7 @@ func byteSliceToInt(raw []byte) (result uint32) {
 	}
 	return
 }
+
 // check find the index of mvhd box
 func check(raw []byte) (int, string) {
 	for i := 0; i < len(raw); i++ {
@@ -46,9 +47,10 @@ func check(raw []byte) (int, string) {
 	}
 	return 0, ""
 }
-// videoTime get video time
+
+// GetDuration get video time(second)
 // by downloading mvhd box of video and parse it
-func GetDuration(m video) uint32{
+func GetDuration(m video) uint32 {
 	m.collectData()
 	data := m.getMvhdBox()
 	if data.done {
