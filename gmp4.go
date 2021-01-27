@@ -56,7 +56,6 @@ func GetDuration(m video) uint32 {
 	if data.done {
 		return data.totalTimeSecond
 	}
-	m.collectData()
 	data.totalTimeSecond = byteSliceToInt(data.metadata[data.metadataIndex+21:data.metadataIndex+25]) / byteSliceToInt(data.metadata[data.metadataIndex+17:data.metadataIndex+21])
 	data.done = true
 	return data.totalTimeSecond
