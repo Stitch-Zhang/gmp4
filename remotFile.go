@@ -3,6 +3,7 @@ package gmp4
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -47,7 +48,7 @@ func (r *RemoteVideo) collectData() {
 	client := &http.Client{Timeout: r.timeout}
 	req, err := http.NewRequest("GET", r.url.String(), nil)
 	if err != nil {
-		fmt.Println("remoteFile.go:Generate request failed!")
+		panic("Request build failed")
 	}
 	if r.header != nil {
 		req.Header = r.header
@@ -65,7 +66,7 @@ func (r *RemoteVideo) collectData() {
 			panic(r.url.String() + "%s is invalid resource")
 		}
 		if err != nil {
-			fmt.Println("remoteFile.go:send request failed!", err)
+			log.Println("remoteFile.go:send request failed!", err)
 			continue
 		}
 		body, _ := ioutil.ReadAll(resp.Body)
